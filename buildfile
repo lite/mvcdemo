@@ -99,10 +99,33 @@ define "mvcdemo" do
 
 		Java.classpath << JETTY_JSP
 
-		task("jetty"=>[package(:war), jetty.use]) do |task|
-			jetty.deploy("http://localhost:8080", task.prerequisites.first)
-			Readline::readline('[Type ENTER to stop Jetty]')
-		end
-  	end
+  		task("jetty"=>[package(:war), jetty.use]) do |task|
+  			jetty.deploy("http://localhost:8080", task.prerequisites.first)
+  			Readline::readline('[Type ENTER to stop Jetty]')
+  		end
+      
+      task :run do
+        Server = Java.org.mortbay.jetty.Server
+        Connector = Java.org.mortbay.jetty.nio.SelectChannelConnector
+        WebAppContext = Java.org.mortbay.jetty.webapp.WebAppContext
+
+        server = Server.new
+        connector = Connector.new
+        connector.setPort(8080)
+        server.addConnector(connector)
+
+        context = WebAppContext.new
+        context.setResourceBase(web_root)
+        context.setDescriptor(File.join(web_root, 'WEB-INF/web.xml'))
+        context.setContextPath('/')
+        context.setExtraClasspath(web_resources_root + ';' + web_classes_root + ';' + Buildr.artifacts(WEB_PACKAGE_DEPENDENCY).join(';'))
+        server.setHandler(context)
+        server.start
+
+        Readline::readline('[Type ENTER to stop Jetty]')
+        server.stop
+      end
+
+    end
 
 end

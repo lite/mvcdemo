@@ -39,5 +39,24 @@ $ mysql.server stop
 buildr
 ====
 
-buildr -T
+buildr -t
 buildr mvcdemo:web:jetty
+buildr mvcdemo:web:run
+
+buildr idea:generate
+buildr idea:clean
+
+Notes
+====
+
+[BUG] cross-thread violation on rb_gc()
+(null)
+
+How to fix:
+
+  $ gem uninstall rjb 
+  Select gem to uninstall:
+   1. rjb-1.3.3
+   2. rjb-1.3.3-universal-darwin-10
+   3. All versions
+  > 2
